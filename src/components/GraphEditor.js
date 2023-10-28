@@ -4,12 +4,34 @@ import Node from "./Node";
 import { Field, Form, Formik } from "formik";
 import Graph from "./Graph";
 import Arrow from "./Arrow";
+import BestFirstSearch from "./BestFirstSearch";
+
+function compareNodebyPCost(nodeA, nodeB) {
+  if (nodeA.pCost < nodeB.pCost) {
+    return -1;
+  } else if (nodeA.pCost > nodeB.pCost) {
+    return 1;
+  } else {
+    return 0;
+  }
+}
+
+function tracePath(goalNode) {
+  const path = [];
+  let currentNode = goalNode;
+  while (currentNode !== null) {
+    path.push(currentNode);
+    currentNode = currentNode.parent;
+  }
+  return path.reverse();
+}
 
 function GraphEditor() {
   const parentRef = useRef(null);
   const initialGraph = new Graph();
   const [myGraph, setMyGraph] = useState(initialGraph);
   const [nodes, setNodes] = useState([]);
+  const [path, setPath] = useState([]);
 
   const addNewNode = (value) => {
     const newGraph = new Graph();
@@ -44,6 +66,7 @@ function GraphEditor() {
     });
     setNodes(updateNodes);
   };
+  console.log("reload");
   console.log(myGraph.matrix);
   return (
     <div className="graph">
@@ -117,6 +140,23 @@ function GraphEditor() {
             </Form>
           )}
         </Formik>
+        <button
+          onClick={() => {
+            setPath(tracePath(BestFirstSearch(myGraph, compareNodebyPCost)));
+          }}
+        >
+          Search
+        </button>
+        <div>
+          <h2>Result</h2>
+          <div className="path">
+            {path?.map((node) => (
+              <h5>
+                {node.state}({node.pCost})
+              </h5>
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );

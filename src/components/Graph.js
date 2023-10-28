@@ -1,7 +1,8 @@
 class Graph {
   constructor(isDirect = false) {
-    this.isDirect = isDirect;
+    this.isDirect = isDirect; //tam thoi chua code phan co huong hay ko huong, mac dinh la co huong
     this.numNodes = 0;
+    this.initial = 0;
     this.nodes = [];
     this.matrix = new Array(this.numNodes)
       .fill(0)
@@ -14,8 +15,18 @@ class Graph {
       return;
     }
     this.nodes.push(name);
+    this.goal = this.nodes.length - 1;
     this.numNodes++;
     this.resizeMatrix();
+  }
+
+  setInitial(node) {
+    for (let i = 0; i < this.nodes.length; i++) {
+      if (this.nodes[i] === node) {
+        this.initial = i;
+        return;
+      }
+    }
   }
 
   isNodeUnique(name) {
@@ -43,6 +54,25 @@ class Graph {
       }
     }
     this.matrix = newMatrix;
+  }
+
+  getInitialNode() {
+    return this.nodes[this.initial];
+  }
+
+  getGoalNode() {
+    return this.nodes[this.goal];
+  }
+  getExpand(node) {
+    const nodeIndex = this.nodes.indexOf(node);
+    return this.matrix[nodeIndex]
+      .map((edge, index) => {
+        if (edge !== 0) {
+          return { state: this.nodes[index], pCost: edge };
+        }
+        return null;
+      })
+      .filter((node) => node !== null);
   }
 }
 
