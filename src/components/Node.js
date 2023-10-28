@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 
-function Vertex({ name, index, parentRef, onPositionChange }) {
+function Node({ name, index, parentRef, onPositionChange }) {
   const nodeRadius = 25;
   const [mouseX, setMouseX] = useState((index + 1) * 100);
   const [mouseY, setMouseY] = useState(100);
@@ -34,16 +34,16 @@ function Vertex({ name, index, parentRef, onPositionChange }) {
 
   return (
     <div
-      className="vertex"
+      className="node"
       style={{
         left: mouseX - nodeRadius + "px",
         top: mouseY - nodeRadius + "px",
       }}
       onMouseDown={handleMouseDown}
     >
-      <h5>{name}</h5>
+      <h1>{name}</h1>
     </div>
   );
 }
 
-export default Vertex;
+export default Node;

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import "../styles.css";
-import Vertex from "./Vertex";
+import Node from "./Node";
 import { Field, Form, Formik } from "formik";
 import Graph from "./Graph";
 import Arrow from "./Arrow";
@@ -9,63 +9,74 @@ function GraphEditor() {
   const parentRef = useRef(null);
   const initialGraph = new Graph();
   const [myGraph, setMyGraph] = useState(initialGraph);
-  const [vertices, setVertices] = useState([]);
+  const [nodes, setNodes] = useState([]);
 
-  const addNewVertex = (value) => {
+  const addNewNode = (value) => {
     const newGraph = new Graph();
-    newGraph.vertices = [...myGraph.vertices];
-    newGraph.numVertices = myGraph.numVertices;
+    newGraph.nodes = [...myGraph.nodes];
+    newGraph.numNodes = myGraph.numNodes;
     newGraph.matrix = [...myGraph.matrix];
-    newGraph.addVertex(value);
+    newGraph.addNode(value);
     setMyGraph(newGraph);
-    const newVertices = newGraph.vertices.map((vertex, index) => ({
+    const newNodes = newGraph.nodes.map((node, index) => ({
       key: index,
-      x: 0,
-      y: 0,
+      x: nodes[index]?.x || 100 * (index + 1),
+      y: nodes[index]?.y || 100,
     }));
-    setVertices(newVertices);
+    setNodes(newNodes);
   };
 
   const addNewEdge = (values) => {
     const newGraph = new Graph();
-    newGraph.vertices = [...myGraph.vertices];
-    newGraph.numVertices = myGraph.numVertices;
+    newGraph.nodes = [...myGraph.nodes];
+    newGraph.numNodes = myGraph.numNodes;
     newGraph.matrix = [...myGraph.matrix];
     newGraph.addEdge(values.headNode, values.tailNode, values.pCost);
     setMyGraph(newGraph);
   };
 
   const changeVerticeCost = (value) => {
-    const updateVertices = vertices.map((vertex) => {
-      if (vertex.key === value.key) {
+    const updateNodes = nodes.map((node) => {
+      if (node.key === value.key) {
         return value;
       }
-
-      return vertex;
+      return node;
     });
-    setVertices(updateVertices);
+    setNodes(updateNodes);
   };
-  // console.log(vertices);
+  console.log(myGraph.matrix);
   return (
     <div className="graph">
       <div className="graph-content" ref={parentRef}>
-        <Arrow x={[100, 200]} y={[200, 100]} />
-        {myGraph.vertices.map((vertex, index) => (
-          <Vertex
-            name={vertex}
+        {myGraph.nodes.map((node, index) => (
+          <Node
+            name={node}
             key={index}
             index={index}
             parentRef={parentRef}
             onPositionChange={changeVerticeCost}
           />
         ))}
-        {myGraph.matrix.forEach((vertex, headIndex) =>
-          vertex.forEach((edge, tailIndex) => {
-            if (edge !== 0) {
-              console.log(edge);
-            }
-          })
-        )}
+        <svg className="arrow-container">
+          {myGraph.matrix.map((node, headIndex) =>
+            node.map((edge, tailIndex) => {
+              if (edge !== 0) {
+                const start = [nodes[headIndex].x, nodes[headIndex].y];
+                const end = [nodes[tailIndex].x, nodes[tailIndex].y];
+                const uniqueKey = `${headIndex}-${tailIndex}`;
+                return (
+                  <Arrow
+                    x={start}
+                    y={end}
+                    key={uniqueKey}
+                    value={myGraph.matrix[headIndex][tailIndex]}
+                  />
+                );
+              }
+              return null;
+            })
+          )}
+        </svg>
       </div>
       <div className="graph-controller">
         <h1>Controller</h1>
@@ -76,12 +87,12 @@ function GraphEditor() {
           {(formikProps) => (
             <Form>
               <div className="formGroup">
-                <label htmlFor="addNew">New Vertex</label>
-                <Field type="text" name="addNew" placeholder="vertex" />
+                <label htmlFor="addNew">New node</label>
+                <Field type="text" name="addNew" placeholder="node" />
                 <button
                   type="button"
                   onClick={() => {
-                    addNewVertex(formikProps.values.addNew);
+                    addNewNode(formikProps.values.addNew);
                     formikProps.resetForm();
                   }}
                 >
