@@ -1,0 +1,36 @@
+.graph{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  height: 100vh;
+}
+
+.graph-controller{
+  border-left: 1px solid black;
+  height: 100%;
+  display: flex;
+  width: 20%;
+  align-items: center;
+  background-color: cadetblue;
+  flex-direction: column;
+}
+
+.graph-content{
+  display: flex;
+  width: 80%;
+  height: 100%;
+  /* background-color: red; */
+}
+
+.vertex{
+  background-color: rebeccapurple;
+  position: absolute;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+}
