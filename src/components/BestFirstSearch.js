@@ -16,7 +16,8 @@ class PriorityQueue {
   }
   push(node) {
     this.element.push(node);
-    this.element.sort();
+    console.log("push:", this.element);
+    this.element.sort(this.compareFunction);
   }
   pop() {
     return this.element.shift();
@@ -48,12 +49,13 @@ function BestFirstSearch(problem, f) {
   let result;
   const node = new Node({ state: problem.getInitialNode() });
   const frontier = new PriorityQueue(f);
+  console.log(node);
+  console.log("before:", frontier.getElement());
   frontier.push(node);
-  console.log("front", frontier.getElement());
+  console.log("after:", frontier.getElement());
+
   const reached = new Map();
   reached.set(node.state, { pCost: 0, parent: node.parent });
-  console.log("reached");
-  console.log(reached);
   while (!frontier.isEmpty()) {
     const currentNode = frontier.pop();
     if (problem.getGoalNode() === currentNode.state) {

@@ -11,7 +11,7 @@ class Graph {
 
   addNode(name) {
     if (!this.isNodeUnique(name)) {
-      alert("Vertex name must be unique");
+      alert("Node name must be unique");
       return;
     }
     this.nodes.push(name);
@@ -28,6 +28,14 @@ class Graph {
       }
     }
   }
+  setGoal(node) {
+    for (let i = 0; i < this.nodes.length; i++) {
+      if (this.nodes[i] === node) {
+        this.goal = i;
+        return;
+      }
+    }
+  }
 
   isNodeUnique(name) {
     return this.nodes.every((vertex) => vertex !== name);
@@ -37,8 +45,17 @@ class Graph {
     const node1 = this.nodes.indexOf(nodeName1);
     const node2 = this.nodes.indexOf(nodeName2);
     if (node1 !== -1 && node2 !== -1) {
-      this.matrix[node1][node2] = value;
-      this.matrix[node2][node1] = value;
+      console.log("add", this.isDirect);
+      console.log("typ", typeof this.isDirect);
+      if (this.isDirect === false) {
+        console.log("false", this.isDirect);
+
+        this.matrix[node1][node2] = value;
+        this.matrix[node2][node1] = value;
+      } else {
+        console.log(this.isDirect);
+        this.matrix[node1][node2] = value;
+      }
     } else {
       alert("No Node Found");
     }
@@ -54,6 +71,11 @@ class Graph {
       }
     }
     this.matrix = newMatrix;
+  }
+
+  setDirect(value) {
+    this.isDirect = value;
+    console.log("setDirect", this.isDirect);
   }
 
   getInitialNode() {

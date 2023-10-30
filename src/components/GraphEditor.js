@@ -34,10 +34,7 @@ function GraphEditor() {
   const [path, setPath] = useState([]);
 
   const addNewNode = (value) => {
-    const newGraph = new Graph();
-    newGraph.nodes = [...myGraph.nodes];
-    newGraph.numNodes = myGraph.numNodes;
-    newGraph.matrix = [...myGraph.matrix];
+    const newGraph = Object.create(myGraph);
     newGraph.addNode(value);
     setMyGraph(newGraph);
     const newNodes = newGraph.nodes.map((node, index) => ({
@@ -49,14 +46,27 @@ function GraphEditor() {
   };
 
   const addNewEdge = (values) => {
-    const newGraph = new Graph();
-    newGraph.nodes = [...myGraph.nodes];
-    newGraph.numNodes = myGraph.numNodes;
-    newGraph.matrix = [...myGraph.matrix];
+    const newGraph = Object.create(myGraph);
     newGraph.addEdge(values.headNode, values.tailNode, values.pCost);
     setMyGraph(newGraph);
   };
 
+  const reset = () => {
+    setMyGraph(initialGraph);
+    setNodes([]);
+    setPath([]);
+  };
+
+  const changeGraphType = (value) => {
+    reset();
+    const newGraph = new Graph();
+    if (value === "false") {
+      newGraph.setDirect(false);
+    } else {
+      newGraph.setDirect(true);
+    }
+    setMyGraph(newGraph);
+  };
   const changeVerticeCost = (value) => {
     const updateNodes = nodes.map((node) => {
       if (node.key === value.key) {
@@ -66,8 +76,13 @@ function GraphEditor() {
     });
     setNodes(updateNodes);
   };
-  console.log("reload");
-  console.log(myGraph.matrix);
+  const search = (value) => {
+    const newGraph = Object.create(myGraph);
+    newGraph.setInitial(value.start);
+    newGraph.setGoal(value.end);
+    setMyGraph(newGraph);
+    setPath(tracePath(BestFirstSearch(newGraph, compareNodebyPCost)));
+  };
   return (
     <div className="graph">
       <div className="graph-content" ref={parentRef}>
@@ -104,7 +119,12 @@ function GraphEditor() {
       <div className="graph-controller">
         <h1>Controller</h1>
         <Formik
-          initialValues={{ addNew: "", headNode: "", tailNode: "", pCost: "" }}
+          initialValues={{
+            addNew: "",
+            headNode: "",
+            tailNode: "",
+            pCost: "",
+          }}
           enableReinitialize={true}
         >
           {(formikProps) => (
@@ -140,19 +160,64 @@ function GraphEditor() {
             </Form>
           )}
         </Formik>
-        <button
-          onClick={() => {
-            setPath(tracePath(BestFirstSearch(myGraph, compareNodebyPCost)));
+        <Formik
+          initialValues={{
+            graphType: false,
+            start: myGraph.getInitialNode() || "",
+            end: myGraph.getGoalNode() || "",
           }}
+          enableReinitialize={true}
         >
-          Search
-        </button>
+          {(formikProps) => (
+            <Form>
+              <div className="formGroup">
+                <label>Graph type</label>
+                <Field name="graphType" as="select">
+                  <option value={false}>Undirected Graph</option>
+                  <option value={true}>Directed Graph</option>
+                </Field>
+                <button
+                  type="button"
+                  onClick={() => changeGraphType(formikProps.values.graphType)}
+                >
+                  Change
+                </button>
+              </div>
+              <div className="formGroup">
+                <label>Start</label>
+                <Field name="start" />
+              </div>
+              <div className="formGroup">
+                <label>End</label>
+                <Field name="end" />
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  search(formikProps.values);
+                }}
+              >
+                Search
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  reset();
+                  formikProps.resetForm();
+                }}
+              >
+                Reset
+              </button>
+            </Form>
+          )}
+        </Formik>
+
         <div>
           <h2>Result</h2>
           <div className="path">
             {path?.map((node) => (
               <h5>
-                {node.state}({node.pCost})
+                {node.state}({node.pCost}){"->"}
               </h5>
             ))}
           </div>
