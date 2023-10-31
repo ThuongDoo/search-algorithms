@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React from "react";
 import "../styles.css";
 function Arrow({ x, y, value }) {
   const [startX, startY] = x;

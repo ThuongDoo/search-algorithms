@@ -1,5 +1,3 @@
-import React from "react";
-
 class Node {
   constructor({ state, parent = null, action = null, pCost = 0 }) {
     this.state = state;

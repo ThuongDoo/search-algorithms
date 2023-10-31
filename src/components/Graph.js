@@ -96,6 +96,10 @@ class Graph {
       })
       .filter((node) => node !== null);
   }
+
+  getIsDirect() {
+    return this.isDirect;
+  }
 }
 
 export default Graph;

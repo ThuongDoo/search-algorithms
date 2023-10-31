@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import "../styles.css";
 import Node from "./Node";
 import { Field, Form, Formik } from "formik";
@@ -83,6 +83,7 @@ function GraphEditor() {
     setMyGraph(newGraph);
     setPath(tracePath(BestFirstSearch(newGraph, compareNodebyPCost)));
   };
+  console.log("reload");
   return (
     <div className="graph">
       <div className="graph-content" ref={parentRef}>
@@ -162,7 +163,7 @@ function GraphEditor() {
         </Formik>
         <Formik
           initialValues={{
-            graphType: false,
+            graphType: myGraph.getIsDirect() || false,
             start: myGraph.getInitialNode() || "",
             end: myGraph.getGoalNode() || "",
           }}
@@ -216,9 +217,9 @@ function GraphEditor() {
           <h2>Result</h2>
           <div className="path">
             {path?.map((node) => (
-              <h5>
+              <h4>
                 {node.state}({node.pCost}){"->"}
-              </h5>
+              </h4>
             ))}
           </div>
         </div>
