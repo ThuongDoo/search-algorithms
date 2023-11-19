@@ -7,9 +7,9 @@ import Arrow from "./Arrow";
 import BestFirstSearch from "./BestFirstSearch";
 
 function compareNodebyPCost(nodeA, nodeB) {
-  if (nodeA.pCost < nodeB.pCost) {
+  if (nodeA.pCost + nodeA.nodeValue < nodeB.pCost + nodeB.nodeValue) {
     return -1;
-  } else if (nodeA.pCost > nodeB.pCost) {
+  } else if (nodeA.pCost + nodeA.nodeValue > nodeB.pCost + nodeB.nodeValue) {
     return 1;
   } else {
     return 0;
@@ -33,12 +33,14 @@ function GraphEditor() {
   const [nodes, setNodes] = useState([]);
   const [path, setPath] = useState([]);
 
-  const addNewNode = (value) => {
+  const addNewNode = (node) => {
     const newGraph = Object.create(myGraph);
-    newGraph.addNode(value);
+    console.log("newgraph", newGraph);
+    newGraph.addNode(node);
     setMyGraph(newGraph);
     const newNodes = newGraph.nodes.map((node, index) => ({
       key: index,
+      nodeValue: node[1],
       x: nodes[index]?.x || 100 * (index + 1),
       y: nodes[index]?.y || 100,
     }));
@@ -46,6 +48,7 @@ function GraphEditor() {
   };
 
   const addNewEdge = (values) => {
+    console.log("addNewEdge", values);
     const newGraph = Object.create(myGraph);
     newGraph.addEdge(values.headNode, values.tailNode, values.pCost);
     setMyGraph(newGraph);
@@ -89,7 +92,8 @@ function GraphEditor() {
       <div className="graph-content" ref={parentRef}>
         {myGraph.nodes.map((node, index) => (
           <Node
-            name={node}
+            name={node[0]}
+            nodeValue={node[1]}
             key={index}
             index={index}
             parentRef={parentRef}
@@ -122,6 +126,7 @@ function GraphEditor() {
         <Formik
           initialValues={{
             addNew: "",
+            nodeValue: 0,
             headNode: "",
             tailNode: "",
             pCost: "",
@@ -133,10 +138,14 @@ function GraphEditor() {
               <div className="formGroup">
                 <label htmlFor="addNew">New node</label>
                 <Field type="text" name="addNew" placeholder="node" />
+                <Field type="text" name="nodeValue" placeholder="0" />
                 <button
                   type="button"
                   onClick={() => {
-                    addNewNode(formikProps.values.addNew);
+                    addNewNode([
+                      formikProps.values.addNew,
+                      Number(formikProps.values.nodeValue),
+                    ]);
                     formikProps.resetForm();
                   }}
                 >

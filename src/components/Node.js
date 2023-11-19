@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 
-function Node({ name, index, parentRef, onPositionChange }) {
+function Node({ name, nodeValue, index, parentRef, onPositionChange }) {
   const nodeRadius = 25;
   const [mouseX, setMouseX] = useState((index + 1) * 100);
   const [mouseY, setMouseY] = useState(100);
@@ -41,7 +41,9 @@ function Node({ name, index, parentRef, onPositionChange }) {
       }}
       onMouseDown={handleMouseDown}
     >
-      <h1>{name}</h1>
+      <h1>
+        {name}/{nodeValue}
+      </h1>
     </div>
   );
 }

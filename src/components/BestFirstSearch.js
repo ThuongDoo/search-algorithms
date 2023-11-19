@@ -1,9 +1,16 @@
 class Node {
-  constructor({ state, parent = null, action = null, pCost = 0 }) {
+  constructor({
+    state,
+    parent = null,
+    action = null,
+    pCost = 0,
+    nodeValue = 0,
+  }) {
     this.state = state;
     this.parent = parent;
     this.action = action;
     this.pCost = pCost;
+    this.nodeValue = nodeValue;
   }
 }
 
@@ -35,6 +42,7 @@ function* Expand(problem, parentNode) {
       new Node({
         state: node.state,
         pCost: node.pCost + parentNode.pCost,
+        nodeValue: node.nodeValue,
         parent: parentNode,
       })
   );
@@ -47,13 +55,16 @@ function BestFirstSearch(problem, f) {
   let result;
   const node = new Node({ state: problem.getInitialNode() });
   const frontier = new PriorityQueue(f);
-  console.log(node);
   console.log("before:", frontier.getElement());
   frontier.push(node);
   console.log("after:", frontier.getElement());
 
   const reached = new Map();
-  reached.set(node.state, { pCost: 0, parent: node.parent });
+  reached.set(node.state, {
+    pCost: 0,
+    nodeValue: node.nodeValue,
+    parent: node.parent,
+  });
   while (!frontier.isEmpty()) {
     const currentNode = frontier.pop();
     if (problem.getGoalNode() === currentNode.state) {
@@ -62,9 +73,18 @@ function BestFirstSearch(problem, f) {
 
     const expandedNodes = Expand(problem, currentNode);
     for (const node of expandedNodes) {
+      console.log(node.nodeValue);
       const s = node.state;
-      if (!reached.has(s) || node.pCost < reached.get(s).pCost) {
-        reached.set(s, { pCost: node.pCost, parent: node.parent });
+      if (
+        !reached.has(s) ||
+        node.pCost + node.nodeValue <
+          reached.get(s).pCost + reached.get(s).nodeValue
+      ) {
+        reached.set(s, {
+          pCost: node.pCost,
+          nodeValue: node.nodeValue,
+          parent: node.parent,
+        });
         frontier.push(node);
       }
     }
