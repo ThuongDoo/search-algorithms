@@ -222,7 +222,7 @@ function GraphEditor() {
                 <label>End</label>
                 <Field name="end" />
               </div>
-              <div>
+              <div className="formGroup">
                 <label>Algorithm</label>
                 <Field name="algorithm" as="select">
                   {algorithmOptions.map((option) => (
