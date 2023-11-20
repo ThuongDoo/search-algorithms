@@ -21,7 +21,6 @@ class PriorityQueue {
   }
   push(node) {
     this.element.push(node);
-    console.log("push:", this.element);
     this.element.sort(this.compareFunction);
   }
   pop() {
@@ -37,27 +36,26 @@ class PriorityQueue {
 
 function* Expand(problem, parentNode) {
   const nodes = problem.getExpand(parentNode.state);
-  const expandedNodes = nodes.map(
-    (node) =>
-      new Node({
-        state: node.state,
-        pCost: node.pCost + parentNode.pCost,
-        nodeValue: node.nodeValue,
-        parent: parentNode,
-      })
-  );
-  for (const node of expandedNodes) {
-    yield node;
+  if (nodes) {
+    const expandedNodes = nodes.map(
+      (node) =>
+        new Node({
+          state: node.state,
+          pCost: node.pCost + parentNode.pCost,
+          nodeValue: node.nodeValue,
+          parent: parentNode,
+        })
+    );
+    for (const node of expandedNodes) {
+      yield node;
+    }
   }
 }
 
 function BestFirstSearch(problem, f) {
-  let result;
   const node = new Node({ state: problem.getInitialNode() });
   const frontier = new PriorityQueue(f);
-  console.log("before:", frontier.getElement());
   frontier.push(node);
-  console.log("after:", frontier.getElement());
 
   const reached = new Map();
   reached.set(node.state, {
@@ -66,14 +64,21 @@ function BestFirstSearch(problem, f) {
     parent: node.parent,
   });
   while (!frontier.isEmpty()) {
+    console.log("while");
     const currentNode = frontier.pop();
+    console.log("compare");
+    console.log(problem.getGoalNode(), currentNode.state);
     if (problem.getGoalNode() === currentNode.state) {
       return currentNode;
     }
 
     const expandedNodes = Expand(problem, currentNode);
+    console.log("exnod");
+    console.log(currentNode);
+    console.log(expandedNodes);
     for (const node of expandedNodes) {
-      console.log(node.nodeValue);
+      console.log("expand");
+      console.log(node);
       const s = node.state;
       if (
         !reached.has(s) ||
@@ -88,9 +93,8 @@ function BestFirstSearch(problem, f) {
         frontier.push(node);
       }
     }
-    result = currentNode;
   }
-  return result;
+  return null;
 }
 
 export default BestFirstSearch;

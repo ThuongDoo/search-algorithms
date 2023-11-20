@@ -17,6 +17,8 @@ function compareNodebyPCost(nodeA, nodeB) {
 }
 
 function tracePath(goalNode) {
+  console.log("goal");
+  console.log(goalNode);
   const path = [];
   let currentNode = goalNode;
   while (currentNode !== null) {
@@ -34,24 +36,28 @@ function GraphEditor() {
   const [path, setPath] = useState([]);
 
   const addNewNode = (node) => {
-    const newGraph = Object.create(myGraph);
-    console.log("newgraph", newGraph);
-    newGraph.addNode(node);
-    setMyGraph(newGraph);
-    const newNodes = newGraph.nodes.map((node, index) => ({
-      key: index,
-      nodeValue: node[1],
-      x: nodes[index]?.x || 100 * (index + 1),
-      y: nodes[index]?.y || 100,
-    }));
-    setNodes(newNodes);
+    setMyGraph((prevGraph) => {
+      const newGraph = new Graph();
+      Object.assign(newGraph, prevGraph);
+      newGraph.addNode(node);
+      const newNodes = newGraph.nodes.map((node, index) => ({
+        key: index,
+        nodeValue: node[1],
+        x: nodes[index]?.x || 100 * (index + 1),
+        y: nodes[index]?.y || 100,
+      }));
+      setNodes(newNodes);
+      return newGraph;
+    });
   };
 
   const addNewEdge = (values) => {
-    console.log("addNewEdge", values);
-    const newGraph = Object.create(myGraph);
-    newGraph.addEdge(values.headNode, values.tailNode, values.pCost);
-    setMyGraph(newGraph);
+    setMyGraph((prevGraph) => {
+      const newGraph = new Graph();
+      Object.assign(newGraph, prevGraph);
+      newGraph.addEdge(values.headNode, values.tailNode, values.pCost);
+      return newGraph;
+    });
   };
 
   const reset = () => {
@@ -80,13 +86,17 @@ function GraphEditor() {
     setNodes(updateNodes);
   };
   const search = (value) => {
-    const newGraph = Object.create(myGraph);
-    newGraph.setInitial(value.start);
-    newGraph.setGoal(value.end);
-    setMyGraph(newGraph);
-    setPath(tracePath(BestFirstSearch(newGraph, compareNodebyPCost)));
+    setMyGraph((prevGraph) => {
+      const newGraph = new Graph();
+      Object.assign(newGraph, prevGraph);
+      newGraph.setGoal(value.end);
+      newGraph.setInitial(value.start);
+      setPath(tracePath(BestFirstSearch(newGraph, compareNodebyPCost)));
+      return newGraph;
+    });
   };
   console.log("reload");
+  console.log(myGraph);
   return (
     <div className="graph">
       <div className="graph-content" ref={parentRef}>
@@ -138,7 +148,7 @@ function GraphEditor() {
               <div className="formGroup">
                 <label htmlFor="addNew">New node</label>
                 <Field type="text" name="addNew" placeholder="node" />
-                <Field type="text" name="nodeValue" placeholder="0" />
+                <Field type="number" name="nodeValue" />
                 <button
                   type="button"
                   onClick={() => {
@@ -225,8 +235,8 @@ function GraphEditor() {
         <div>
           <h2>Result</h2>
           <div className="path">
-            {path?.map((node) => (
-              <h4>
+            {path?.map((node, index) => (
+              <h4 key={index}>
                 {node.state}({node.pCost}){"->"}
               </h4>
             ))}

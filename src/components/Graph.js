@@ -31,7 +31,7 @@ class Graph {
 
   setInitial(node) {
     for (let i = 0; i < this.nodes.length; i++) {
-      if (this.nodes[i] === node) {
+      if (this.nodes[i][0] === node) {
         this.initial = i;
         return;
       }
@@ -39,7 +39,7 @@ class Graph {
   }
   setGoal(node) {
     for (let i = 0; i < this.nodes.length; i++) {
-      if (this.nodes[i] === node) {
+      if (this.nodes[i][0] === node) {
         this.goal = i;
         return;
       }
@@ -55,15 +55,10 @@ class Graph {
     const node2 = this.isItemInArray(this.nodes, nodeName2);
 
     if (node1 !== undefined && node2 !== undefined) {
-      console.log("add", this.isDirect);
-      console.log("typ", typeof this.isDirect);
       if (this.isDirect === false) {
-        console.log("false", this.isDirect);
-
         this.matrix[node1][node2] = value;
         this.matrix[node2][node1] = value;
       } else {
-        console.log(this.isDirect);
         this.matrix[node1][node2] = value;
       }
     } else {
@@ -85,26 +80,40 @@ class Graph {
 
   setDirect(value) {
     this.isDirect = value;
-    console.log("setDirect", this.isDirect);
   }
 
   getInitialNode() {
-    return this.nodes[this.initial];
+    if (this.nodes[this.initial]) {
+      return this.nodes[this.initial][0];
+    }
+    return null;
+    // return this.nodes[this.initial];
   }
 
   getGoalNode() {
-    return this.nodes[this.goal];
+    if (this.nodes[this.goal]) {
+      return this.nodes[this.goal][0];
+    }
+    return null;
+    // return this.nodes[this.goal];
   }
   getExpand(node) {
-    const nodeIndex = this.nodes.indexOf(node);
-    return this.matrix[nodeIndex]
-      .map((edge, index) => {
-        if (edge !== 0) {
-          return { state: this.nodes[index], pCost: edge };
-        }
-        return null;
-      })
-      .filter((node) => node !== null);
+    console.log("getExpand");
+    console.log(node);
+    const nodeIndex = this.nodes.findIndex((item) => item[0] === node);
+    console.log(nodeIndex);
+    if (nodeIndex !== -1) {
+      console.log("return no");
+      return this.matrix[nodeIndex]
+        .map((edge, index) => {
+          if (edge !== 0) {
+            return { state: this.nodes[index][0], pCost: edge };
+          }
+          return null;
+        })
+        .filter((node) => node !== null);
+    }
+    return null;
   }
 
   getIsDirect() {
