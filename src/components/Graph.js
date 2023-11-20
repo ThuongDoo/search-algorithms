@@ -97,6 +97,13 @@ class Graph {
     return null;
     // return this.nodes[this.goal];
   }
+
+  getNode(node) {
+    console.log("getnod");
+    const temp = this.nodes.filter((item) => item[0] === node);
+    console.log(temp);
+    return temp[0];
+  }
   getExpand(node) {
     console.log("getExpand");
     console.log(node);
@@ -107,7 +114,11 @@ class Graph {
       return this.matrix[nodeIndex]
         .map((edge, index) => {
           if (edge !== 0) {
-            return { state: this.nodes[index][0], pCost: edge };
+            return {
+              state: this.nodes[index][0],
+              pCost: edge,
+              nodeValue: this.nodes[index][1],
+            };
           }
           return null;
         })

@@ -14,6 +14,26 @@ class Node {
   }
 }
 
+function aStarCompareFunction(nodeA, nodeB) {
+  if (nodeA.pCost + nodeA.nodeValue < nodeB.pCost + nodeB.nodeValue) {
+    return -1;
+  } else if (nodeA.pCost + nodeA.nodeValue > nodeB.pCost + nodeB.nodeValue) {
+    return 1;
+  } else {
+    return 0;
+  }
+}
+
+function BFSCompareFunction(nodeA, nodeB) {
+  if (nodeA.pCost < nodeB.pCost) {
+    return -1;
+  } else if (nodeA.pCost > nodeB.pCost) {
+    return 1;
+  } else {
+    return 0;
+  }
+}
+
 class PriorityQueue {
   constructor(compareFunction) {
     this.element = [];
@@ -52,9 +72,17 @@ function* Expand(problem, parentNode) {
   }
 }
 
-function BestFirstSearch(problem, f) {
-  const node = new Node({ state: problem.getInitialNode() });
-  const frontier = new PriorityQueue(f);
+export function aStar(problem) {
+  console.log("astar");
+  const node = new Node({
+    state: problem.getInitialNode(),
+    nodeValue: problem.getNode(problem.getInitialNode())[1],
+  });
+  console.log("ini");
+  console.log(problem.getNode("s"));
+  console.log(node);
+  console.log("uni");
+  const frontier = new PriorityQueue(aStarCompareFunction);
   frontier.push(node);
 
   const reached = new Map();
@@ -64,21 +92,13 @@ function BestFirstSearch(problem, f) {
     parent: node.parent,
   });
   while (!frontier.isEmpty()) {
-    console.log("while");
     const currentNode = frontier.pop();
-    console.log("compare");
-    console.log(problem.getGoalNode(), currentNode.state);
     if (problem.getGoalNode() === currentNode.state) {
       return currentNode;
     }
 
     const expandedNodes = Expand(problem, currentNode);
-    console.log("exnod");
-    console.log(currentNode);
-    console.log(expandedNodes);
     for (const node of expandedNodes) {
-      console.log("expand");
-      console.log(node);
       const s = node.state;
       if (
         !reached.has(s) ||
@@ -96,5 +116,30 @@ function BestFirstSearch(problem, f) {
   }
   return null;
 }
+export function BestFirstSearch(problem) {
+  console.log("BFS");
+  const node = new Node({ state: problem.getInitialNode() });
+  const frontier = new PriorityQueue(BFSCompareFunction);
+  frontier.push(node);
 
-export default BestFirstSearch;
+  const reached = new Map();
+  reached.set(node.state, { pCost: 0, parent: node.parent });
+  while (!frontier.isEmpty()) {
+    const currentNode = frontier.pop();
+    if (problem.getGoalNode() === currentNode.state) {
+      return currentNode;
+    }
+
+    const expandedNodes = Expand(problem, currentNode);
+    for (const node of expandedNodes) {
+      const s = node.state;
+      if (!reached.has(s) || node.pCost < reached.get(s).pCost) {
+        reached.set(s, { pCost: node.pCost, parent: node.parent });
+        frontier.push(node);
+      }
+    }
+  }
+  return null;
+}
+
+// export default BestFirstSearch;

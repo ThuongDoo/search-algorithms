@@ -4,7 +4,7 @@ import Node from "./Node";
 import { Field, Form, Formik } from "formik";
 import Graph from "./Graph";
 import Arrow from "./Arrow";
-import BestFirstSearch from "./BestFirstSearch";
+import { BestFirstSearch, aStar } from "./BestFirstSearch";
 
 function compareNodebyPCost(nodeA, nodeB) {
   if (nodeA.pCost + nodeA.nodeValue < nodeB.pCost + nodeB.nodeValue) {
@@ -17,12 +17,11 @@ function compareNodebyPCost(nodeA, nodeB) {
 }
 
 function tracePath(goalNode) {
-  console.log("goal");
-  console.log(goalNode);
   const path = [];
   let currentNode = goalNode;
   while (currentNode !== null) {
     path.push(currentNode);
+    console.log(currentNode);
     currentNode = currentNode.parent;
   }
   return path.reverse();
@@ -34,6 +33,10 @@ function GraphEditor() {
   const [myGraph, setMyGraph] = useState(initialGraph);
   const [nodes, setNodes] = useState([]);
   const [path, setPath] = useState([]);
+  const algorithmOptions = [
+    { value: "0", label: "Best First Search" },
+    { value: "1", label: "A Star" },
+  ];
 
   const addNewNode = (node) => {
     setMyGraph((prevGraph) => {
@@ -86,12 +89,19 @@ function GraphEditor() {
     setNodes(updateNodes);
   };
   const search = (value) => {
+    console.log(value);
     setMyGraph((prevGraph) => {
       const newGraph = new Graph();
       Object.assign(newGraph, prevGraph);
       newGraph.setGoal(value.end);
       newGraph.setInitial(value.start);
-      setPath(tracePath(BestFirstSearch(newGraph, compareNodebyPCost)));
+      if (value.algorithm === "0") {
+        console.log("haha");
+        setPath(tracePath(BestFirstSearch(newGraph)));
+      } else if (value.algorithm === "1") {
+        console.log("huhu");
+        setPath(tracePath(aStar(newGraph)));
+      }
       return newGraph;
     });
   };
@@ -185,6 +195,7 @@ function GraphEditor() {
             graphType: myGraph.getIsDirect() || false,
             start: myGraph.getInitialNode() || "",
             end: myGraph.getGoalNode() || "",
+            algorithm: "0",
           }}
           enableReinitialize={true}
         >
@@ -210,6 +221,16 @@ function GraphEditor() {
               <div className="formGroup">
                 <label>End</label>
                 <Field name="end" />
+              </div>
+              <div>
+                <label>Algorithm</label>
+                <Field name="algorithm" as="select">
+                  {algorithmOptions.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </Field>
               </div>
               <button
                 type="button"
