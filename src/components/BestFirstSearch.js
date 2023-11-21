@@ -42,7 +42,7 @@ function* Expand(problem, parentNode) {
       new Node({
         state: node.state,
         pCost: node.pCost + parentNode.pCost,
-        nodeValue: node.nodeValue,
+        nodeValue: node.state[1],
         parent: parentNode,
       })
   );
@@ -62,7 +62,7 @@ function BestFirstSearch(problem, f) {
   const reached = new Map();
   reached.set(node.state, {
     pCost: 0,
-    nodeValue: node.nodeValue,
+    nodeValue: 0,
     parent: node.parent,
   });
   while (!frontier.isEmpty()) {
@@ -73,16 +73,19 @@ function BestFirstSearch(problem, f) {
 
     const expandedNodes = Expand(problem, currentNode);
     for (const node of expandedNodes) {
-      console.log(node.nodeValue);
       const s = node.state;
+      console.log("name", node.state[0]);
+      console.log("pcost", node.pCost);
+      console.log("state1", node.state[1]);
+      console.log("heuristic", node.pCost + node.state[1]);
       if (
         !reached.has(s) ||
-        node.pCost + node.nodeValue <
+        node.pCost + node.state[1] <
           reached.get(s).pCost + reached.get(s).nodeValue
       ) {
         reached.set(s, {
           pCost: node.pCost,
-          nodeValue: node.nodeValue,
+          nodeValue: node.state[1],
           parent: node.parent,
         });
         frontier.push(node);
