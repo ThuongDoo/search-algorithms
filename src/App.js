@@ -31,7 +31,8 @@ function App() {
         const tempHeuristic = heuristicInput.split("\n").map((line) =>
           line
             .trim()
-            .split(/\s+/)
+            .split(":")
+            // .split(/\s+/)
             .map((item, index) => (index === 0 ? item : Number(item)))
         );
 
@@ -77,10 +78,11 @@ function App() {
       console.log("nothing");
     }
   };
+  console.log(graph);
   return (
     <div className="App">
       <div className="editor">
-        <GraphEditor graph={graph} />
+        <GraphEditor graph={graph} nodeRadius={70} />
       </div>
       <div className="controller">
         <h1>Hello React.</h1>
