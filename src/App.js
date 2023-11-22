@@ -39,7 +39,8 @@ function App() {
         //set variables
         const [initial, goal] = variables
           .split("\n")
-          .map((item) => item.trim().split(/\s+/)[1]);
+          .map((item) => item.trim().split(":")[1].trim());
+        // .map((item) => item.trim().split(/\s+/)[1]);
 
         //set graph
         const tempGraph = graphInput
