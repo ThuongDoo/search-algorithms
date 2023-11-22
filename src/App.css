@@ -1,6 +1,20 @@
 .App {
   text-align: center;
+  display: flex;
+  height: 100vh;
 }
+
+.editor{
+  width: 80%;
+  height: 100%;
+}
+
+.controller{
+  background-color: #61dafb;
+  height: 100%;
+  width: 20%;
+}
+
 
 .App-logo {
   height: 40vmin;
@@ -36,3 +50,4 @@
     transform: rotate(360deg);
   }
 }
+

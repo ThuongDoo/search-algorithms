@@ -1,18 +1,4 @@
-class Node {
-  constructor({
-    state,
-    parent = null,
-    action = null,
-    pCost = 0,
-    nodeValue = 0,
-  }) {
-    this.state = state;
-    this.parent = parent;
-    this.action = action;
-    this.pCost = pCost;
-    this.nodeValue = nodeValue;
-  }
-}
+import { Node } from "./Graph";
 
 function aStarCompareFunction(nodeA, nodeB) {
   if (nodeA.pCost + nodeA.nodeValue < nodeB.pCost + nodeB.nodeValue) {
@@ -73,15 +59,10 @@ function* Expand(problem, parentNode) {
 }
 
 export function aStar(problem) {
-  console.log("astar");
   const node = new Node({
-    state: problem.getInitialNode(),
-    nodeValue: problem.getNode(problem.getInitialNode())[1],
+    state: problem.getInitialNode()[0],
+    nodeValue: problem.getNode(problem.getInitialNode()[0])[1],
   });
-  console.log("ini");
-  console.log(problem.getNode("s"));
-  console.log(node);
-  console.log("uni");
   const frontier = new PriorityQueue(aStarCompareFunction);
   frontier.push(node);
 
@@ -93,7 +74,7 @@ export function aStar(problem) {
   });
   while (!frontier.isEmpty()) {
     const currentNode = frontier.pop();
-    if (problem.getGoalNode() === currentNode.state) {
+    if (problem.getGoalNode()[0] === currentNode.state) {
       return currentNode;
     }
 
@@ -116,9 +97,9 @@ export function aStar(problem) {
   }
   return null;
 }
-export function BestFirstSearch(problem) {
+export function bestFirstSearch(problem) {
   console.log("BFS");
-  const node = new Node({ state: problem.getInitialNode() });
+  const node = new Node({ state: problem.getInitialNode()[0] });
   const frontier = new PriorityQueue(BFSCompareFunction);
   frontier.push(node);
 
@@ -126,7 +107,7 @@ export function BestFirstSearch(problem) {
   reached.set(node.state, { pCost: 0, parent: node.parent });
   while (!frontier.isEmpty()) {
     const currentNode = frontier.pop();
-    if (problem.getGoalNode() === currentNode.state) {
+    if (problem.getGoalNode()[0] === currentNode.state) {
       return currentNode;
     }
 

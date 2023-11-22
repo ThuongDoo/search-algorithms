@@ -1,9 +1,22 @@
 import { useState } from "react";
 import "./App.css";
-import Graph from "./components/Graph";
+import { Graph } from "./components/Graph";
+import { aStar, bestFirstSearch } from "./components/SearchAlgorithms";
+import GraphEditor from "./components/graphEditor/GraphEditor";
 
 function App() {
   const [graph, setGraph] = useState([]);
+  const [path, setPath] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isReadFile, setIsReadFile] = useState(false);
+  const [searchOption, setSearchOption] = useState("1");
+  const handleSelectChange = (event) => {
+    setSearchOption(event.target.value);
+  };
+  const algorithmOptions = [
+    { value: "0", label: "Best First Search" },
+    { value: "1", label: "A Star" },
+  ];
   const showFile = async (e) => {
     e.preventDefault();
     const file = e.target.files[0];
@@ -26,7 +39,6 @@ function App() {
         const [initial, goal] = variables
           .split("\n")
           .map((item) => item.trim().split(/\s+/)[1]);
-        console.log(initial, goal);
 
         //set graph
         const tempGraph = graphInput
@@ -40,17 +52,57 @@ function App() {
           nodes: tempHeuristic,
         });
         setGraph(newGraph);
+        setIsReadFile(true);
       };
       reader.readAsText(file);
     }
   };
-  console.log(graph);
+
+  function tracePath(goalNode) {
+    const path = [];
+    let currentNode = goalNode;
+    while (currentNode !== null) {
+      path.push(currentNode);
+      currentNode = currentNode.parent;
+    }
+    return path.reverse();
+  }
+
+  const handleSearch = () => {
+    if (searchOption === "1") {
+      setPath(tracePath(aStar(graph)));
+    } else if (searchOption === "0") {
+      setPath(tracePath(bestFirstSearch(graph)));
+    } else {
+      console.log("nothing");
+    }
+  };
   return (
     <div className="App">
-      <div>
+      <div className="editor">
+        <GraphEditor graph={graph} />
+      </div>
+      <div className="controller">
         <h1>Hello React.</h1>
         <input type="file" onChange={(e) => showFile(e)} />
         <h2>Start editing to see some magic happen!</h2>
+        <div>
+          <label>Algorith</label>
+          <select value={searchOption} onChange={handleSelectChange}>
+            {algorithmOptions.map((option) => (
+              <option value={option.value} key={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        </div>
+        <button onClick={handleSearch} disabled={!isReadFile}>
+          SEARCH
+        </button>
+        {console.log(path)}
+        {path.map((node, index) => (
+          <h2 key={index}>{`${node.state}(${node.pCost})->`}</h2>
+        ))}
       </div>
     </div>
   );

@@ -1,0 +1,25 @@
+.node {
+  border-radius: 100%;
+  border: 2px solid black;
+  background: white;
+  position: absolute;
+  display: flex;
+  justify-content: space-between;
+  flex-direction: column;
+}
+
+.node>h1 {
+  padding: 0;
+  margin: 0;
+}
+
+.node>hr {
+  width: 100%;
+  border: 1px solid black;
+}
+
+.arrow-container {
+  width: 100%;
+  height: 100%;
+  /* background-color: red; */
+}
